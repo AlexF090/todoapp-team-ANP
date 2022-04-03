@@ -7,13 +7,26 @@ const Header = styled.header`
   flex-direction: column;
 `;
 
-const Button = ({myFunction, label}) => {
+// const MyList = ({items, remove, toggleStatus}) => {
+//   return(
+//     items.map((item, index) => (
+//     <ToDo
+//       key={`${index}_${item.text}`}
+//       item={item}
+//       index={index}
+//       remove={remove}
+//       toggleStatus={toggleStatus}
+//     />
+//   )))
+// };
+
+const Button = ({ myFunction, label }) => {
   return <button onClick={myFunction}>{label}</button>;
 };
 
-const ToDo = ({ item, index, remove, toggleStatus }) => {
+const ToDo = ({ item, index, remove, toggleStatus, visible }) => {
   return (
-    <li>
+    <li className={visible ? "" : "hidden"}>
       <Button
         label="X"
         myFunction={() => {
@@ -31,15 +44,15 @@ const ToDo = ({ item, index, remove, toggleStatus }) => {
   );
 };
 
-
 function App() {
   const [textInput, setTextInput] = useState("");
   const [items, setItems] = useState([]); //[{text: '', status: true}]
-const [fiteredItems, setFiteredItems] = useState([...items])
+  // const [fiteredItems, setFiteredItems] = useState([...items])
+  const [filterStatus, setFilterStatus] = useState("All");
   const handleOnChange = (event) => {
     setTextInput(event.target.value);
   };
-
+  //id: Math.random() + '' = random ID in String
   const add = () => {
     const saveInputInList = [...items, { text: textInput, status: "Pending" }];
     setItems(saveInputInList);
@@ -53,20 +66,21 @@ const [fiteredItems, setFiteredItems] = useState([...items])
 
   const toggleStatus = (itemIndex) => {
     const newItems = [...items];
-    newItems[itemIndex].status = newItems[itemIndex].status === "Complete" ? "Pending" : "Complete";
+    newItems[itemIndex].status =
+      newItems[itemIndex].status === "Complete" ? "Pending" : "Complete";
     setItems(newItems);
     // console.log(newItems)
   };
 
-const FilterByStatus = (value) => {
-  const updatedStuff = items.filter((items) => items.status === value);
-  setFiteredItems(updatedStuff);
-};
-const AllStats = () => {
-  const newItems = [...items];
-  setItems(newItems)
-  console.log(newItems)
-};
+  const FilterByStatus = (value) => {
+    const updatedStuff = items.filter((items) => items.status === value);
+    setItems(updatedStuff);
+  };
+  const AllStats = () => {
+    const newItems = [...items];
+    setItems(newItems);
+    console.log(newItems);
+  };
   return (
     <div className="App">
       <h1>ToDo App</h1>
@@ -80,18 +94,30 @@ const AllStats = () => {
         check
       </button> */}
       <p>{`Your text length: ${textInput.replace(/\s+/g, "").length}`}</p>
-      <button onClick={AllStats}>All</button>
-      <button onClick={()=>FilterByStatus('Complete')}>Complete</button>
-      <button onClick={()=>FilterByStatus('Pending')}>Pending</button>
+      <button
+        onClick={() => {
+          setFilterStatus("All");
+        }}
+      >
+        All
+      </button>
+      <button onClick={() => setFilterStatus("Complete")}>Complete</button>
+      <button onClick={() => setFilterStatus("Pending")}>Pending</button>
       {/* <hr /> */}
       <ul>
+        {/* <MyList items={items} /> */}
         {items.map((item, index) => (
           <ToDo
-            key={`${index}_${item.text}`}  
+            key={`${index}_${item.text}`}
             item={item}
             index={index}
-            remove={remove}
-            toggleStatus={toggleStatus}
+            remove={() => {
+              remove(index);
+            }}
+            toggleStatus={() => {
+              toggleStatus(index);
+            }}
+            visible={filterStatus === "All" || item.status === filterStatus}
           />
         ))}
       </ul>
@@ -100,5 +126,3 @@ const AllStats = () => {
 }
 
 export default App;
-
-
