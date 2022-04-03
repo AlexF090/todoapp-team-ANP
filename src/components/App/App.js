@@ -1,48 +1,74 @@
 import "./App.css";
-import GlobalStyle from "../../style/globalstyles";
 import React, { useState } from "react";
+import styled from "styled-components";
 
+const Header = styled.header`
+  display: flex;
+  flex-direction: column;
+`;
 
-///// const List = () => {
+const Button = ({myFunction, label}) => {
+  return <button onClick={myFunction}>{label}</button>;
+};
 
-///// };
+const ToDo = ({ item, index, remove, toggleStatus }) => {
+  return (
+    <li>
+      <Button
+        label="X"
+        myFunction={() => {
+          remove(index);
+        }}
+      />
+      {item.text}
+      <Button
+        label={item.status}
+        myFunction={() => {
+          toggleStatus(index);
+        }}
+      />
+    </li>
+  );
+};
 
-//App/Main (usestates)
-//Header (html & addButton & input)
-//Liste (Liste[Array], Remove, Toggle[Button])
 
 function App() {
   const [textInput, setTextInput] = useState("");
   const [items, setItems] = useState([]); //[{text: '', status: true}]
-  
-
+const [fiteredItems, setFiteredItems] = useState([...items])
   const handleOnChange = (event) => {
     setTextInput(event.target.value);
   };
 
-// const countLength = (event) => {
-//     setTextInput(event.replace(/\s+/g, '').length);
-// };
-
   const add = () => {
-    const saveInputInList = [...items, { text: textInput, status: "Pedding" }]; //{text: textInput, status: 'Pedding'}
+    const saveInputInList = [...items, { text: textInput, status: "Pending" }];
     setItems(saveInputInList);
+    // console.log(items)
   };
 
-const remove = (itemIndex) => {
+  const remove = (itemIndex) => {
     const updatedStuff = items.filter((_, index) => index !== itemIndex);
     setItems(updatedStuff);
-};
+  };
 
-const toggleStatus = (itemIndex) => {
+  const toggleStatus = (itemIndex) => {
     const newItems = [...items];
-newItems[itemIndex].status = newItems[itemIndex].status === "Complete" ? "Pending" : "Complete";
+    newItems[itemIndex].status = newItems[itemIndex].status === "Complete" ? "Pending" : "Complete";
     setItems(newItems);
-};
+    // console.log(newItems)
+  };
 
+const FilterByStatus = (value) => {
+  const updatedStuff = items.filter((items) => items.status === value);
+  setFiteredItems(updatedStuff);
+};
+const AllStats = () => {
+  const newItems = [...items];
+  setItems(newItems)
+  console.log(newItems)
+};
   return (
     <div className="App">
-      <GlobalStyle />
       <h1>ToDo App</h1>
       <input onChange={handleOnChange} type="text" />
       <button onClick={add}>+</button>
@@ -53,23 +79,26 @@ newItems[itemIndex].status = newItems[itemIndex].status === "Complete" ? "Pendin
       >
         check
       </button> */}
-      <p>{`Your text length: ${textInput.replace(/\s+/g, '').length}`}</p>
-      <button>All</button>
-      <button>Complete</button>
-      <button>Pending</button>
+      <p>{`Your text length: ${textInput.replace(/\s+/g, "").length}`}</p>
+      <button onClick={AllStats}>All</button>
+      <button onClick={()=>FilterByStatus('Complete')}>Complete</button>
+      <button onClick={()=>FilterByStatus('Pending')}>Pending</button>
       {/* <hr /> */}
       <ul>
-        {items.map((item, index) => { return (
-        <li key={index}>
-            <button onClick={() => {remove(index)}}>X</button>
-            {item.text}
-            <button onClick={() => {toggleStatus(index)}}>{item.status}</button>
-            </li>
-          );
-        })}
+        {items.map((item, index) => (
+          <ToDo
+            key={`${index}_${item.text}`}  
+            item={item}
+            index={index}
+            remove={remove}
+            toggleStatus={toggleStatus}
+          />
+        ))}
       </ul>
     </div>
   );
 }
 
 export default App;
+
+
