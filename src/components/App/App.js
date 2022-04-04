@@ -7,19 +7,6 @@ const Header = styled.header`
   flex-direction: column;
 `;
 
-// const MyList = ({items, remove, toggleStatus}) => {
-//   return(
-//     items.map((item, index) => (
-//     <ToDo
-//       key={`${index}_${item.text}`}
-//       item={item}
-//       index={index}
-//       remove={remove}
-//       toggleStatus={toggleStatus}
-//     />
-//   )))
-// };
-
 const Button = ({ myFunction, label }) => {
   return <button onClick={myFunction}>{label}</button>;
 };
