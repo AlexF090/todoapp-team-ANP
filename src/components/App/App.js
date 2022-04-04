@@ -24,20 +24,20 @@ const Button = ({ myFunction, label }) => {
   return <button onClick={myFunction}>{label}</button>;
 };
 
-const ToDo = ({ item, index, remove, toggleStatus, visible }) => {
+const ToDo = ({ item, remove, toggleStatus, visible }) => {
   return (
     <li className={visible ? "" : "hidden"}>
       <Button
         label="X"
         myFunction={() => {
-          remove(index);
+          remove();
         }}
       />
       {item.text}
       <Button
         label={item.status}
         myFunction={() => {
-          toggleStatus(index);
+          toggleStatus();
         }}
       />
     </li>
@@ -47,7 +47,7 @@ const ToDo = ({ item, index, remove, toggleStatus, visible }) => {
 function App() {
   const [textInput, setTextInput] = useState("");
   const [items, setItems] = useState([]); //[{text: '', status: true}]
-  // const [fiteredItems, setFiteredItems] = useState([...items])
+
   const [filterStatus, setFilterStatus] = useState("All");
   const handleOnChange = (event) => {
     setTextInput(event.target.value);
@@ -56,7 +56,6 @@ function App() {
   const add = () => {
     const saveInputInList = [...items, { text: textInput, status: "Pending" }];
     setItems(saveInputInList);
-    // console.log(items)
   };
 
   const remove = (itemIndex) => {
@@ -69,30 +68,14 @@ function App() {
     newItems[itemIndex].status =
       newItems[itemIndex].status === "Complete" ? "Pending" : "Complete";
     setItems(newItems);
-    // console.log(newItems)
   };
 
-  const FilterByStatus = (value) => {
-    const updatedStuff = items.filter((items) => items.status === value);
-    setItems(updatedStuff);
-  };
-  const AllStats = () => {
-    const newItems = [...items];
-    setItems(newItems);
-    console.log(newItems);
-  };
   return (
     <div className="App">
       <h1>ToDo App</h1>
       <input onChange={handleOnChange} type="text" />
       <button onClick={add}>+</button>
-      {/* <button
-        onClick={() => {
-          console.log(items);
-        }}
-      >
-        check
-      </button> */}
+
       <p>{`Your text length: ${textInput.replace(/\s+/g, "").length}`}</p>
       <button
         onClick={() => {
@@ -103,14 +86,12 @@ function App() {
       </button>
       <button onClick={() => setFilterStatus("Complete")}>Complete</button>
       <button onClick={() => setFilterStatus("Pending")}>Pending</button>
-      {/* <hr /> */}
+      <hr />
       <ul>
-        {/* <MyList items={items} /> */}
         {items.map((item, index) => (
           <ToDo
             key={`${index}_${item.text}`}
             item={item}
-            index={index}
             remove={() => {
               remove(index);
             }}
