@@ -1,6 +1,7 @@
 import "./App.css";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { nanoid } from "nanoid";
 
 const Header = styled.header`
   display: flex;
@@ -11,9 +12,9 @@ const Button = ({ myFunction, label }) => {
   return <button onClick={myFunction}>{label}</button>;
 };
 
-const ToDo = ({ item, remove, toggleStatus, visible }) => {
+const ToDo = ({ item, remove, toggleStatus }) => {
   return (
-    <li className={visible ? "" : "hidden"}>
+    <li>
       <Button
         label="X"
         myFunction={() => {
@@ -35,25 +36,38 @@ function App() {
   const [textInput, setTextInput] = useState("");
   const [items, setItems] = useState([]); //[{text: '', status: true}]
 
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All"); 
   const handleOnChange = (event) => {
     setTextInput(event.target.value);
   };
   //id: Math.random() + '' = random ID in String
   const add = () => {
-    const saveInputInList = [...items, { text: textInput, status: "Pending" }];
+    const saveInputInList = [
+      ...items,
+      { id: nanoid(), text: textInput, status: "Pending" },
+    ];
     setItems(saveInputInList);
   };
 
-  const remove = (itemIndex) => {
-    const updatedStuff = items.filter((_, index) => index !== itemIndex);
+  const remove = (itemId) => {
+    const updatedStuff = items.filter((item) => item.id !== itemId);
     setItems(updatedStuff);
   };
 
-  const toggleStatus = (itemIndex) => {
-    const newItems = [...items];
-    newItems[itemIndex].status =
-      newItems[itemIndex].status === "Complete" ? "Pending" : "Complete";
+  const toggleStatus = (itemId) => {
+    const newItems = items.map((item) => {
+      if (item.id === itemId) {
+        return {
+          ...item,
+          status: item.status === "Complete" ? "Pending" : "Complete",
+        };
+      } else {
+        return item;
+      }
+    });
+    // const newItems = [...items];
+    // newItems[itemId].status =
+    //   newItems[itemId].status === "Complete" ? "Pending" : "Complete";
     setItems(newItems);
   };
 
@@ -75,19 +89,22 @@ function App() {
       <button onClick={() => setFilterStatus("Pending")}>Pending</button>
       <hr />
       <ul>
-        {items.map((item, index) => (
-          <ToDo
-            key={`${index}_${item.text}`}
-            item={item}
-            remove={() => {
-              remove(index);
-            }}
-            toggleStatus={() => {
-              toggleStatus(index);
-            }}
-            visible={filterStatus === "All" || item.status === filterStatus}
-          />
-        ))}
+        {items
+          .filter(
+            (item) => filterStatus === "All" || item.status === filterStatus
+          )
+          .map((item) => (
+            <ToDo
+              key={item.id}
+              item={item}
+              remove={() => {
+                remove(item.id);
+              }}
+              toggleStatus={() => {
+                toggleStatus(item.id);
+              }}
+            />
+          ))}
       </ul>
     </div>
   );
